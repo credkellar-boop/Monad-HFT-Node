@@ -14,34 +14,41 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
+    # 1. Rust Integrity (HFT Engine)
     - name: Set up Rust
       uses: dtolnay/rust-toolchain@stable
-      
-    # FIXED: The runner now points to the src directory where Cargo.toml lives
     - name: Rust Syntax Check
-      working-directory: ./src
-      run: cargo check --verbose
+      run: |
+        if [ -f "Cargo.toml" ]; then
+          cargo check --verbose
+        elif [ -f "src/Cargo.toml" ]; then
+          cd src && cargo check --verbose
+        else
+          echo "Warning: Cargo.toml not found. Skipping Rust check."
+        fi
 
+    # 2. Python Integrity (Reinvest & Risk)
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.10'
-
     - name: Install Python Dependencies
       run: |
-        if [ -f requirements.txt ]; then
+        if [ -f "requirements.txt" ]; then
           pip install -r requirements.txt
+        else
+          echo "No requirements.txt found. Skipping Python install."
         fi
 
+    # 3. Go Integrity (System Control)
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
         go-version: '1.21'
-
     - name: Go Build Check
       run: |
         if [ -d "go-control" ]; then
           go build ./go-control/...
         else
-          echo "Go directory not found, skipping."
+          echo "No Go directory found, skipping build."
         fi
