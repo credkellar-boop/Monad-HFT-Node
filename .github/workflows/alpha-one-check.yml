@@ -14,11 +14,12 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    # FIXED: This replaces the broken actions/rust-lang line
     - name: Set up Rust
       uses: dtolnay/rust-toolchain@stable
       
+    # FIXED: The runner now points to the src directory where Cargo.toml lives
     - name: Rust Syntax Check
+      working-directory: ./src
       run: cargo check --verbose
 
     - name: Set up Python
@@ -42,5 +43,5 @@ jobs:
         if [ -d "go-control" ]; then
           go build ./go-control/...
         else
-          echo "No Go directory found, skipping build."
+          echo "Go directory not found, skipping."
         fi
