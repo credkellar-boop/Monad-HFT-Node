@@ -1,15 +1,22 @@
 package main
 
+import "fmt"
+
 type Allocation struct {
-	Crypto, Stocks, Forex, Banking, AI float64
+	GeminiResearch float64
+	Banking        float64
 }
 
 func GetAllocation(earnings float64) Allocation {
 	return Allocation{
-		Crypto: earnings * 0.25,
-		Stocks: earnings * 0.25,
-		Forex:  earnings * 0.25,
-		Banking: earnings * 0.15,
-		AI:     earnings * 0.10,
+		GeminiResearch: earnings * 0.80,
+		Banking:        earnings * 0.20,
 	}
+}
+
+func main() {
+    // Test logic
+    earnings := 500000.0
+    alloc := GetAllocation(earnings)
+    fmt.Printf("Alpha-One Disbursement - Research: $%.2f, Banking: $%.2f\n", alloc.GeminiResearch, alloc.Banking)
 }
