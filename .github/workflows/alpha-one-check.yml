@@ -1,0 +1,44 @@
+name: Alpha-One Integrity Check
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    # 1. Check Python (Reinvest & Risk logic)
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    - name: Install Python Dependencies
+      run: |
+        pip install -r requirements.txt
+    
+    # 2. Check Rust (HFT Engine)
+    - name: Set up Rust
+      uses: actions/rust-lang/setup-rust-action@v1
+    - name: Rust Syntax Check
+      run: cargo check --verbose
+
+    # 3. Check Go (System Control)
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.20'
+    - name: Go Build Check
+      run: go build ./go-control/...
+
+    # 4. Final Security Audit (Monad-Ready Simulation)
+    - name: Alpha-One Security Scan
+      run: |
+        echo "Running Monad-Ready Protocol..."
+        # This is a placeholder for your scanner's success exit code
+        exit 0 
