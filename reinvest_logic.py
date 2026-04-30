@@ -1,8 +1,8 @@
-import json
-
-class EternityReinvestor:
-    def __init__(self):
-        self.allocation_pct = {
+# Eternity Sovereign Reinvestment Logic
+class Reinvestor:
+    def __init__(self, weekly_profit):
+        self.profit = weekly_profit
+        self.allocation = {
             "Crypto": 0.25,
             "Stocks": 0.25,
             "Forex": 0.25,
@@ -10,22 +10,13 @@ class EternityReinvestor:
             "AI_Research": 0.10
         }
 
-    def execute_allocation(self, total_profit):
-        """Calculates exact dollar amounts for reinvestment."""
-        print(f"--- Processing Weekly Profit: ${total_profit:,} ---")
-        
-        disbursement = {
-            asset: total_profit * pct 
-            for asset, pct in self.allocation_pct.items()
-        }
-        
-        for asset, amount in disbursement.items():
+    def distribute(self):
+        print(f"--- Alpha-One Disbursement: ${self.profit:,} ---")
+        for asset, pct in self.allocation.items():
+            amount = self.profit * pct
             print(f"Allocating ${amount:,.2f} to {asset}")
-            
-        return disbursement
 
-# Execution
 if __name__ == "__main__":
-    # Example: $2,000,000 monthly target
-    bot = EternityReinvestor()
-    bot.execute_allocation(500000) # Weekly run
+    # Example test run
+    bot = Reinvestor(500000)
+    bot.distribute()
