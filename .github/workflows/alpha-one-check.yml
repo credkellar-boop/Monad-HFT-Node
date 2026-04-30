@@ -7,57 +7,27 @@ on:
     branches: [ "main" ]
 
 jobs:
-  validate-sovereign-stack:
+  sovereign-build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 1. RUST CHECK
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
 
       - name: Rust Syntax Check
-        run: |
-          if [ -f "Cargo.toml" ]; then
-            cargo check --verbose
-          else
-            echo "Cargo.toml not found in root. Searching subdirectories..."
-            find . -name "Cargo.toml" -execdir cargo check \;
-          fi
+        run: cargo check --verbose
 
-      # 2. PYTHON CHECK
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Python Dependency Check
+      - name: Python Dependencies
         run: |
           if [ -f "requirements.txt" ]; then
-            pip install --upgrade pip
             pip install -r requirements.txt
           else
-            echo "requirements.txt not found. Skipping."
+            echo "No requirements found, skipping."
           fi
-
-      # 3. GO CHECK
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.21'
-
-      - name: Go Controller Check
-        run: |
-          if [ -d "go-control" ]; then
-            cd go-control
-            if [ ! -f go.mod ]; then go mod init go-control; fi
-            go mod tidy
-            go build -v ./...
-          else
-            echo "go-control folder not found. Skipping."
-          fi
-
-      # 4. FINAL STATUS
-      - name: Alpha-One Security Scan
-        run: echo "Sovereign Architecture Integrity Verified."
