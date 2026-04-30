@@ -1,22 +1,36 @@
-# Eternity Sovereign Reinvestment Logic
-class Reinvestor:
+import os
+from decimal import Decimal
+from dotenv import load_dotenv
+
+load_dotenv()
+
+class SovereignReinvestor:
     def __init__(self, weekly_profit):
-        self.profit = weekly_profit
-        self.allocation = {
-            "Crypto": 0.25,
-            "Stocks": 0.25,
-            "Forex": 0.25,
-            "Banking": 0.15,
-            "AI_Research": 0.10
+        # Updated to the 80/20 split mandate
+        self.profit = Decimal(str(weekly_profit))
+        self.reinvest_rate = Decimal('0.80')
+        self.liquid_rate = Decimal('0.20')
+        
+    def calculate_allocation(self):
+        """
+        Calculates the split for Gemini research and operational liquidity.
+        """
+        to_research = self.profit * self.reinvest_rate
+        to_checking = self.profit * self.liquid_rate
+        
+        return {
+            "gemini_research_80": float(to_research),
+            "liquid_checking_20": float(to_checking)
         }
 
     def distribute(self):
-        print(f"--- Alpha-One Disbursement: ${self.profit:,} ---")
-        for asset, pct in self.allocation.items():
-            amount = self.profit * pct
+        allocation = self.calculate_allocation()
+        print(f"--- Alpha-One Disbursement: ${self.profit} ---")
+        for asset, amount in allocation.items():
             print(f"Allocating ${amount:,.2f} to {asset}")
 
 if __name__ == "__main__":
-    # Example test run
-    bot = Reinvestor(500000)
+    # Example logic test for Alpha-One
+    test_earnings = 500000 
+    bot = SovereignReinvestor(test_earnings)
     bot.distribute()
