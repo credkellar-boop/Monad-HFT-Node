@@ -1,14 +1,17 @@
-use std::time::Instant;
-
+// Monad-HFT-Node Core Engine
 pub struct HftEngine {
-    pub strategy_count: u8,
-    pub is_active: bool,
+    pub active: bool,
+    pub strategies: u8,
 }
 
 impl HftEngine {
-    pub async fn execute_order(&self, pair: &str, amount: f64, side: &str) {
-        let start = Instant::now();
-        // High-frequency order placement logic
-        println!("Order: {} {} of {} | Latency: {:?}", side, amount, pair, start.elapsed());
+    pub fn new() -> Self {
+        Self { active: true, strategies: 13 }
+    }
+
+    pub fn execute(&self, signal: &str) {
+        if self.active {
+            println!("Executing signal: {} across 13 strategies", signal);
+        }
     }
 }
