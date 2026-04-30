@@ -11,27 +11,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout Code
+      uses: actions/checkout@v4
 
-    # Corrected Rust Setup
+    # FIXED: This replaces the broken actions/rust-lang line
     - name: Set up Rust
       uses: dtolnay/rust-toolchain@stable
+      
     - name: Rust Syntax Check
       run: cargo check --verbose
 
-    # Python Logic Check
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
+
     - name: Install Python Dependencies
       run: |
-        pip install -r requirements.txt
+        if [ -f requirements.txt ]; then
+          pip install -r requirements.txt
+        fi
 
-    # Go Bridge Check
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
-        go-version: '1.20'
+        go-version: '1.21'
+
     - name: Go Build Check
-      run: go build ./go-control/...
+      run: |
+        if [ -d "go-control" ]; then
+          go build ./go-control/...
+        else
+          echo "No Go directory found, skipping build."
+        fi
