@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    # 1. Check Python (Reinvest & Risk logic)
+    # 1. Set up Python
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
@@ -22,13 +22,13 @@ jobs:
       run: |
         pip install -r requirements.txt
     
-    # 2. Check Rust (HFT Engine)
+    # 2. Set up Rust (FIXED PATH)
     - name: Set up Rust
-      uses: actions/rust-lang/setup-rust-action@v1
+      uses: dtolnay/rust-toolchain@stable
     - name: Rust Syntax Check
       run: cargo check --verbose
 
-    # 3. Check Go (System Control)
+    # 3. Set up Go
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
@@ -36,9 +36,8 @@ jobs:
     - name: Go Build Check
       run: go build ./go-control/...
 
-    # 4. Final Security Audit (Monad-Ready Simulation)
+    # 4. Final Security Audit Simulation
     - name: Alpha-One Security Scan
       run: |
         echo "Running Monad-Ready Protocol..."
-        # This is a placeholder for your scanner's success exit code
         exit 0 
