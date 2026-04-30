@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  # FIX: Resolves the Node.js 20 deprecation warning
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -14,7 +18,33 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    # 1. Rust Integrity (HFT Engine)
+    # FIX: Corrects the Go build by ensuring the workspace is initialized
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.21'
+    - name: Go Build Check
+      working-directory: ./go-control
+      run: |
+        if [ -f go.mod ]; then
+          go build ./...
+        else
+          echo "Warning: go.mod not found in go-control. Initializing..."
+          go mod init go-control
+          go build ./...
+        fi
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    - name: Install Python Dependencies
+      run: |
+        if [ -f requirements.txt ]; then
+          pip install -r requirements.txt
+        fi
+
+    # FIX: Handles Rust if Cargo.toml is in the root OR src folder
     - name: Set up Rust
       uses: dtolnay/rust-toolchain@stable
     - name: Rust Syntax Check
@@ -24,31 +54,6 @@ jobs:
         elif [ -f "src/Cargo.toml" ]; then
           cd src && cargo check --verbose
         else
-          echo "Warning: Cargo.toml not found. Skipping Rust check."
-        fi
-
-    # 2. Python Integrity (Reinvest & Risk)
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
-    - name: Install Python Dependencies
-      run: |
-        if [ -f "requirements.txt" ]; then
-          pip install -r requirements.txt
-        else
-          echo "No requirements.txt found. Skipping Python install."
-        fi
-
-    # 3. Go Integrity (System Control)
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.21'
-    - name: Go Build Check
-      run: |
-        if [ -d "go-control" ]; then
-          go build ./go-control/...
-        else
-          echo "No Go directory found, skipping build."
+          echo "Error: Cargo.toml not found. Please move it to the root directory."
+          exit 1
         fi
