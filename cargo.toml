@@ -1,42 +1,15 @@
-name: Alpha-One Integrity Check
+[package]
+name = "monad-hft-node"
+version = "1.0.0"
+edition = "2021"
 
-on:
-  push:
-    branches: [ "main" ]
+[[bin]]
+name = "monad-engine"
+path = "src/engine.rs"
 
-jobs:
-  validate-stack:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Set up Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Rust Integrity Check
-        run: |
-          # Force fix naming if user hasn't renamed yet
-          if [ -f "Cargo.Toml" ]; then mv Cargo.Toml Cargo.toml; fi
-          
-          # Check for manifest
-          if [ -f "Cargo.toml" ]; then
-            cargo check --verbose
-          else
-            echo "Error: Cargo.toml not found in root. Checking subdirectories..."
-            find . -name "Cargo.toml" -execdir cargo check \;
-          fi
-
-      - name: Python Dependency Check
-        run: |
-          if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
-          fi
-
-      - name: Go Build Check
-        run: |
-          if [ -d "go-control" ]; then
-            cd go-control
-            if [ ! -f go.mod ]; then go mod init go-control; fi
-            go build -v ./...
-          fi
+[dependencies]
+tokio = { version = "1.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+reqwest = { version = "0.11", features = ["json"] }
+ethers = "2.0"
