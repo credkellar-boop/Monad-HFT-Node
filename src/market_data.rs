@@ -1,4 +1,3 @@
-use tokio::net::TcpStream;
 use bincode;
 
 pub struct MarketFeed {
@@ -7,8 +6,11 @@ pub struct MarketFeed {
 
 impl MarketFeed {
     pub async fn stream_ticks(&self) {
-        // Implementation for high-speed binary stream parsing
+        // High-speed binary stream parsing for Monad/Solana
         println!("Streaming live ticks from {}...", self.exchange_url);
-        // Connect to Monad/Solana WebSocket here
+        
+        // Placeholder for binary decoding logic using bincode
+        let data = vec![0u8; 10];
+        let _decoded: Result<Vec<u8>, _> = bincode::deserialize(&data);
     }
 }
