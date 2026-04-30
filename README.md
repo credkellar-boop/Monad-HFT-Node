@@ -1,3 +1,5 @@
+![Build Status](https://github.com/credkellar-boop/Monad-HFT-Node/actions/workflows/alpha-one-check.yml/badge.svg)
+
 # ♾️ Eternity Ledger
 **The Sovereign Command Center for Project Eternity**
 
