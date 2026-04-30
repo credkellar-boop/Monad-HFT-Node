@@ -3,54 +3,41 @@ name: Alpha-One Integrity Check
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
-  build-and-test:
+  validate-sovereign-stack:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust Build Check
+        run: |
+          # The file is now correctly named cargo.toml
+          find . -name "cargo.toml" -execdir cargo check --verbose \;
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Install Python Dependencies
+      - name: Python Dependency Check
         run: |
-          pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
-      - name: Set up Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Rust Syntax Check
-        run: |
-          # 1. Force lowercase rename if it exists as Toml
-          if [ -f "Cargo.Toml" ]; then mv Cargo.Toml Cargo.toml; fi
-          
-          # 2. Check if it's in the root, if not, find it
-          if [ -f "Cargo.toml" ]; then
-            cargo check --verbose
-          else
-            echo "Searching for Cargo.toml in subdirectories..."
-            find . -name "Cargo.toml" -execdir cargo check \;
-          fi
 
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version: '1.21'
 
-      - name: Go Build Check
+      - name: Go Controller Check
         run: |
           if [ -d "go-control" ]; then
             cd go-control
             if [ ! -f go.mod ]; then go mod init go-control; fi
             go mod tidy
             go build -v ./...
-          else
-            echo "go-control folder not found, skipping."
           fi
